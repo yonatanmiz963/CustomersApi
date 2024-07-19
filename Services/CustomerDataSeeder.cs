@@ -3,10 +3,13 @@ using CustomersApi.Models;
 public class CustomerDataSeeder
 {
     private readonly CustomerContext _db;
+    private readonly IPasswordUtilityService _passwordUtilityService;
 
-    public CustomerDataSeeder(CustomerContext db)
+
+    public CustomerDataSeeder(CustomerContext db, IPasswordUtilityService passwordUtilityService)
     {
         _db = db;
+        _passwordUtilityService = passwordUtilityService;
     }
 
     public void SeedData()
@@ -19,10 +22,7 @@ public class CustomerDataSeeder
     {
         return new List<Customer>()
         {
-            new Customer {  Name = "Ada", LastName = "Lovelace", PhoneNumber = "123456789"},
-            new Customer {  Name = "Ada", LastName = "Lovelace", PhoneNumber = "123456789"}, 
-            new Customer {  Name = "Ada", LastName = "Lovelace", PhoneNumber = "123456789"},
-            new Customer {  Name = "Ada", LastName = "Lovelace", PhoneNumber = "123456789"},
+            new Customer {  FirstName = "Yonatan", Email = "yonatanmiz963@gmail.com", LastName = "Mizrahi", PhoneNumber = "123456789", HashPassword = _passwordUtilityService.HashPassword("admin")},
         };
     }
 }
