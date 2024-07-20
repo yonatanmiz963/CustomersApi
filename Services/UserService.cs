@@ -61,7 +61,6 @@ namespace CustomersApi.Services
                 var obj = await _db.CustomerItems.FirstOrDefaultAsync(c => c.Id == userObj.Id);
                 if (obj != null)
                 {
-                    // obj.Address = userObj.Address;
                     obj.FirstName = userObj.FirstName;
                     obj.LastName = userObj.LastName;
                     _db.CustomerItems.Update(obj);
