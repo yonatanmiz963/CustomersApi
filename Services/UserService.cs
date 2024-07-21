@@ -1,29 +1,24 @@
-using CustomersApi.Model;
-using CustomersApi.Models;
+
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using CustomersApi.Models;
+using CustomersApi.Model;
 
-public interface IUserService
-{
-    Task<AuthenticateResponse?> Authenticate(AuthenticateRequest model);
-    Task<IEnumerable<Customer>> GetAll();
-    Task<Customer?> GetById(int id);
-    Task<Customer?> AddAndUpdateUser(Customer userObj);
-}
+
 
 namespace CustomersApi.Services
 {
     public class UserService : IUserService
     {
         private readonly AppSettings _appSettings;
-        private readonly CustomerContext _db;
+        private readonly UsersContext _db;
         private readonly IPasswordUtilityService _passwordUtilityService;
 
-        public UserService(IOptions<AppSettings> appSettings, CustomerContext db, IPasswordUtilityService passwordUtility)
+        public UserService(IOptions<AppSettings> appSettings, UsersContext db, IPasswordUtilityService passwordUtility)
         {
             _appSettings = appSettings.Value;
             _db = db;
@@ -32,51 +27,50 @@ namespace CustomersApi.Services
 
         public async Task<AuthenticateResponse?> Authenticate(AuthenticateRequest model)
         {
-            var Customer = await _db.CustomerItems.SingleOrDefaultAsync(x => x.FirstName == model.FirstName && _passwordUtilityService.VerifyPassword(model.Password, x.HashPassword) && x.LastName == model.LastName && x.Email == model.Email);
+            var User = await _db.UserItems.SingleOrDefaultAsync(x => x.FirstName == model.FirstName && _passwordUtilityService.VerifyPassword(model.Password, x.HashPassword) && x.LastName == model.LastName && x.Email == model.Email);
 
-            // return null if Customer not found
-            if (Customer == null) return null;
+            // return null if User not found
+            if (User == null) return null;
 
             // authentication successful so generate jwt token
-            var token = await generateJwtToken(Customer);
+            var token = await generateJwtToken(User);
 
-            return new AuthenticateResponse(Customer, token);
+            return new AuthenticateResponse(User, token);
         }
 
-        public async Task<IEnumerable<Customer>> GetAll()
+        public async Task<IEnumerable<User>> GetAll()
         {
-            return await _db.CustomerItems.ToListAsync();
+            return await _db.UserItems.ToListAsync();
         }
 
-        public async Task<Customer?> GetById(int id)
+        public async Task<User?> GetById(int id)
         {
-            return await _db.CustomerItems.FirstOrDefaultAsync(x => x.Id == id);
+            return await _db.UserItems.FirstOrDefaultAsync(x => x.Id == id);
         }
-
-        public async Task<Customer?> AddAndUpdateUser(Customer userObj)
+        public async Task<User?> UpdateUser(User userObj)
         {
-            bool isSuccess = false;
-            if (userObj.Id > 0)
+            var user = await _db.UserItems.FindAsync(userObj.Id);
+            if (user != null)
             {
-                var obj = await _db.CustomerItems.FirstOrDefaultAsync(c => c.Id == userObj.Id);
-                if (obj != null)
-                {
-                    obj.FirstName = userObj.FirstName;
-                    obj.LastName = userObj.LastName;
-                    _db.CustomerItems.Update(obj);
-                    isSuccess = await _db.SaveChangesAsync() > 0;
-                }
+            user.FirstName = userObj.FirstName;
+            user.LastName = userObj.LastName;
+            user.BankAccount = userObj.BankAccount;
+            await _db.SaveChangesAsync();
+            return user;
             }
-            else
-            {
-                await _db.CustomerItems.AddAsync(userObj);
-                isSuccess = await _db.SaveChangesAsync() > 0;
-            }
-
-            return isSuccess ? userObj : null;
+            return null;
         }
-        // helper methods
-        private async Task<string> generateJwtToken(Customer Customer)
+        public async Task DeleteUser(int userId)
+        {
+            var user = await _db.UserItems.FindAsync(userId);
+            if (user != null)
+            {
+            _db.UserItems.Remove(user);
+            await _db.SaveChangesAsync();
+            }
+        }
+
+        private async Task<string> generateJwtToken(User User)
         {
             //Generate token that is valid for 7 days
             var tokenHandler = new JwtSecurityTokenHandler();
@@ -86,7 +80,7 @@ namespace CustomersApi.Services
                 var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
                 var tokenDescriptor = new SecurityTokenDescriptor
                 {
-                    Subject = new ClaimsIdentity(new[] { new Claim("id", Customer.Id.ToString()) }),
+                    Subject = new ClaimsIdentity(new[] { new Claim("id", User.Id.ToString()) }),
                     Expires = DateTime.UtcNow.AddDays(7),
                     SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
                 };
