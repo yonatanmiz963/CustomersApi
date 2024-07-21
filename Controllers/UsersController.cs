@@ -17,9 +17,9 @@ namespace CustomersApi.Controllers
         }
 
         [HttpPost("Login")]
-        public async Task<IActionResult> Login([FromBody]AuthenticateRequest model)
+        public async Task<IActionResult> Login([FromBody] AuthenticateRequest authData)
         {
-            var response = await _userService.Authenticate(model);
+            var response = await _userService.Authenticate(authData);
 
             if (response == null)
                 return BadRequest(new { message = "Username or password is incorrect" });
@@ -27,7 +27,8 @@ namespace CustomersApi.Controllers
             return Ok(response);
         }
 
-        [HttpGet("Customers")]
+        // [HttpGet("Customers")]
+        [HttpGet]
         [Authorize]
         public async Task<IActionResult> Customers()
         {
@@ -35,9 +36,10 @@ namespace CustomersApi.Controllers
             return Ok(users);
         }
 
-        // POST api/<CustomerController>
-        [HttpPut("EditCustomer")]
+        // [HttpPut("EditCustomer")]
+        [HttpPut]
         [Authorize]
+        [ValidateIsEditorAuthorized]
         public async Task<IActionResult> EditCustomer([FromBody] UpdateUserDTO userObj)
         {
             var result = await _userService.UpdateUser(userObj);
@@ -48,8 +50,7 @@ namespace CustomersApi.Controllers
             return Ok(result);
         }
 
-        // GET api/<CustomerController>/5
-        [HttpGet("CustomerByID/{id}")]
+        [HttpGet("{id}")]
         [Authorize]
         public async Task<IActionResult> CustomerByID(int id)
         {
@@ -62,8 +63,7 @@ namespace CustomersApi.Controllers
             return Ok(user);
         }
 
-        // DELETE: api/Customers/5
-        [HttpDelete("DeleteCustomer/{id}")]
+        [HttpDelete("{id}")]
         [Authorize]
         public async Task<IActionResult> DeleteCustomer(int id)
         {

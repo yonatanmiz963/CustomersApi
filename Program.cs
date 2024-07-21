@@ -17,13 +17,14 @@ var builder = WebApplication.CreateBuilder(args);
                           {
                               policy.WithOrigins("http://localhost:3000")
                                 .AllowAnyHeader()
-                                .AllowAnyMethod();
+                                .AllowAnyMethod()
+                                .AllowCredentials();
                           });
     });
 
     builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
     builder.Services.AddScoped<IUserService, UserService>();
-    builder.Services.AddScoped<IPasswordUtilityService, PasswordUtilityService>();
+    builder.Services.AddSingleton<IPasswordUtilityService, PasswordUtilityService>();
 
     builder.Services.AddControllers();
 

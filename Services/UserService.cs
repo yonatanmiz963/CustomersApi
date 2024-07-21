@@ -119,7 +119,7 @@ namespace CustomersApi.Services
                     Audience = _appSettings.Audience,
                     Issuer = _appSettings.Issuer,
                     Subject = new ClaimsIdentity(new[] { new Claim("id", User.Id.ToString()) }),
-                    Expires = DateTime.UtcNow.AddDays(7),
+                    Expires = DateTime.UtcNow.AddMinutes(10),
                     SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
                 };
                 return tokenHandler.CreateToken(tokenDescriptor);
