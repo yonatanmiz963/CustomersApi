@@ -4,7 +4,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using CustomersApi.Model;
 
-namespace CustomersApi.Helpers
+namespace CustomersApi.Middlewares
 {
     public class JwtMiddleware
     {
@@ -37,15 +37,10 @@ namespace CustomersApi.Helpers
                 {
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(key),
-                    ValidateIssuer = false,
-                    ValidateAudience = false,
-                    ValidIssuer = "https://localhost:7052",
-                    ValidAudiences = new List<string>
-                {
-                    "http://localhost:3000",
-                    "https://localhost:7052",
-                    "https://localhost:7052/swagger/index.html"
-                },
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidIssuer = _appSettings.Issuer,
+                    ValidAudience = _appSettings.Audience,
                     // set clock skew to zero so tokens expire exactly at token expiration time (instead of 5 minutes later)
                     ClockSkew = TimeSpan.Zero
                 }, out SecurityToken validatedToken);

@@ -80,6 +80,7 @@ namespace CustomersApi.Services
                 user.FirstName = userObj.FirstName;
                 user.LastName = userObj.LastName;
                 user.BankAccount = userObj.BankAccount;
+
                 await _db.SaveChangesAsync();
                 return new UserDTO
                 {
@@ -94,6 +95,7 @@ namespace CustomersApi.Services
             }
             return null;
         }
+
         public async Task DeleteUser(int userId)
         {
             var user = await _db.UserItems.FindAsync(userId);
@@ -114,6 +116,8 @@ namespace CustomersApi.Services
                 var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
                 var tokenDescriptor = new SecurityTokenDescriptor
                 {
+                    Audience = _appSettings.Audience,
+                    Issuer = _appSettings.Issuer,
                     Subject = new ClaimsIdentity(new[] { new Claim("id", User.Id.ToString()) }),
                     Expires = DateTime.UtcNow.AddDays(7),
                     SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)

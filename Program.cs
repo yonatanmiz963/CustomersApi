@@ -1,9 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using CustomersApi.Models;
-using CustomersApi.Helpers;
 using CustomersApi.Model;
 using Microsoft.OpenApi.Models;
 using CustomersApi.Services;
+using CustomersApi.Middlewares;
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
@@ -16,7 +16,8 @@ var builder = WebApplication.CreateBuilder(args);
                           policy =>
                           {
                               policy.WithOrigins("http://localhost:3000")
-                                .AllowAnyHeader();
+                                .AllowAnyHeader()
+                                .AllowAnyMethod();
                           });
     });
 

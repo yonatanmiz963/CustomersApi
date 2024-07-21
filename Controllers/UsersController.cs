@@ -1,10 +1,11 @@
 
 using CustomersApi.Models;
+using CustomrsApi.Filters;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CustomersApi.Controllers
 {
-    [Route("api/[controller]")] //    /api/Users
+    [Route("api/[controller]")]
     [ApiController]
     public class UsersController : ControllerBase
     {
@@ -27,7 +28,7 @@ namespace CustomersApi.Controllers
         }
 
         [HttpGet("Customers")]
-        // [Authorize]
+        [Authorize]
         public async Task<IActionResult> Customers()
         {
             var users = await _userService.GetAll();
@@ -36,7 +37,7 @@ namespace CustomersApi.Controllers
 
         // POST api/<CustomerController>
         [HttpPut("EditCustomer")]
-        // [Authorize]
+        [Authorize]
         public async Task<IActionResult> EditCustomer([FromBody] UpdateUserDTO userObj)
         {
             var result = await _userService.UpdateUser(userObj);
@@ -49,7 +50,7 @@ namespace CustomersApi.Controllers
 
         // GET api/<CustomerController>/5
         [HttpGet("CustomerByID/{id}")]
-        // [Authorize]
+        [Authorize]
         public async Task<IActionResult> CustomerByID(int id)
         {
             var user = await _userService.GetById(id);
@@ -63,7 +64,7 @@ namespace CustomersApi.Controllers
 
         // DELETE: api/Customers/5
         [HttpDelete("DeleteCustomer/{id}")]
-        // [Authorize]
+        [Authorize]
         public async Task<IActionResult> DeleteCustomer(int id)
         {
             var customer = await _userService.GetById(id);
