@@ -38,25 +38,59 @@ namespace CustomersApi.Services
             return new AuthenticateResponse(User, token);
         }
 
-        public async Task<IEnumerable<User>> GetAll()
+        public async Task<IEnumerable<UserDTO>> GetAll()
         {
-            return await _db.UserItems.ToListAsync();
+            var users = await _db.UserItems.ToListAsync();
+            var userDTOs = users.Select(user => new UserDTO
+            {
+                Id = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                BankAccount = user.BankAccount,
+                Date = user.Date,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber,
+            }).ToList();
+
+            return userDTOs;
         }
 
-        public async Task<User?> GetById(int id)
+        public async Task<UserDTO?> GetById(int id)
         {
-            return await _db.UserItems.FirstOrDefaultAsync(x => x.Id == id);
+            var user = await _db.UserItems.FirstOrDefaultAsync(x => x.Id == id);
+            if (user != null)
+            {
+                return new UserDTO
+                {
+                    Id = user.Id,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    BankAccount = user.BankAccount,
+                    Date = user.Date,
+                    Email = user.Email,
+                };
+            }
+            return null;
         }
-        public async Task<User?> UpdateUser(User userObj)
+        public async Task<UserDTO?> UpdateUser(UpdateUserDTO userObj)
         {
             var user = await _db.UserItems.FindAsync(userObj.Id);
             if (user != null)
             {
-            user.FirstName = userObj.FirstName;
-            user.LastName = userObj.LastName;
-            user.BankAccount = userObj.BankAccount;
-            await _db.SaveChangesAsync();
-            return user;
+                user.FirstName = userObj.FirstName;
+                user.LastName = userObj.LastName;
+                user.BankAccount = userObj.BankAccount;
+                await _db.SaveChangesAsync();
+                return new UserDTO
+                {
+                    Id = user.Id,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    BankAccount = user.BankAccount,
+                    Date = user.Date,
+                    Email = user.Email,
+                    PhoneNumber = user.PhoneNumber,
+                };
             }
             return null;
         }
@@ -65,8 +99,8 @@ namespace CustomersApi.Services
             var user = await _db.UserItems.FindAsync(userId);
             if (user != null)
             {
-            _db.UserItems.Remove(user);
-            await _db.SaveChangesAsync();
+                _db.UserItems.Remove(user);
+                await _db.SaveChangesAsync();
             }
         }
 

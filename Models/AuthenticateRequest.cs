@@ -1,19 +1,27 @@
 using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace CustomersApi.Models
 {
     public class AuthenticateRequest
     {
+        [Required]
+        [EmailAddress]
         [DefaultValue("yonatanmiz963@gmail.com")]
-        public required string Email { get; set; }
+        public string? Email { get; set; }
 
+
+        [Required]
         [DefaultValue("admin")]
-        public required string Password { get; set; }
+        [Length(5, 20)]
+        public string? Password { get; set; }
 
+        [Required]
         [DefaultValue("Yonatan")]
-        public required string FirstName { get; set; }
+        public string? FirstName { get; set; }
 
+        [Required]
         [DefaultValue("Mizrahi")]
-        public required string LastName { get; set; }
+        public string? LastName { get; set; }
     }
 }

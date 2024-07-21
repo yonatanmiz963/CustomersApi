@@ -1,6 +1,5 @@
 
 using CustomersApi.Models;
-using CustomrsApi.Helpers;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CustomersApi.Controllers
@@ -17,7 +16,7 @@ namespace CustomersApi.Controllers
         }
 
         [HttpPost("Login")]
-        public async Task<IActionResult> Authenticate(AuthenticateRequest model)
+        public async Task<IActionResult> Login([FromBody]AuthenticateRequest model)
         {
             var response = await _userService.Authenticate(model);
 
@@ -28,8 +27,8 @@ namespace CustomersApi.Controllers
         }
 
         [HttpGet("Customers")]
-        [Authorize]
-        public async Task<IActionResult> Get()
+        // [Authorize]
+        public async Task<IActionResult> Customers()
         {
             var users = await _userService.GetAll();
             return Ok(users);
@@ -37,17 +36,21 @@ namespace CustomersApi.Controllers
 
         // POST api/<CustomerController>
         [HttpPut("EditCustomer")]
-        [Authorize]
-        public async Task<IActionResult> Put([FromBody] User userObj)
+        // [Authorize]
+        public async Task<IActionResult> EditCustomer([FromBody] UpdateUserDTO userObj)
         {
-            // userObj.Id = 0;
-            return Ok(await _userService.UpdateUser(userObj));
+            var result = await _userService.UpdateUser(userObj);
+            if (result == null)
+            {
+                return NotFound();
+            }
+            return Ok(result);
         }
 
         // GET api/<CustomerController>/5
         [HttpGet("CustomerByID/{id}")]
-        [Authorize]
-        public async Task<IActionResult> GetCustomerById(int id)
+        // [Authorize]
+        public async Task<IActionResult> CustomerByID(int id)
         {
             var user = await _userService.GetById(id);
             if (user == null)
@@ -60,7 +63,7 @@ namespace CustomersApi.Controllers
 
         // DELETE: api/Customers/5
         [HttpDelete("DeleteCustomer/{id}")]
-        [Authorize]
+        // [Authorize]
         public async Task<IActionResult> DeleteCustomer(int id)
         {
             var customer = await _userService.GetById(id);
