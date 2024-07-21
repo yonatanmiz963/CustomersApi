@@ -1,7 +1,6 @@
 using CustomersApi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using System;
 
 namespace CustomrsApi.Filters
 {
@@ -17,7 +16,9 @@ namespace CustomrsApi.Filters
                 {
                     if (userObj.Id != user.Id)
                     {
-                        context.Result = new UnauthorizedResult();
+                        context.Result = new UnauthorizedObjectResult(
+                            "You are not authorized to edit this user's information, only the user himself can edit his information."
+                        );
                     }
                 }
                 else
