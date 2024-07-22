@@ -22,6 +22,13 @@ var builder = WebApplication.CreateBuilder(args);
                           });
     });
 
+    builder.Services.AddOutputCache(options =>
+    {
+        options.AddPolicy("UsersPolicy", builder =>
+           builder.Expire(TimeSpan.FromMinutes(20)).Tag("UsersPolicy_Tag"));
+
+    });
+
     builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
     builder.Services.AddScoped<IUserService, UserService>();
     builder.Services.AddSingleton<IPasswordUtilityService, PasswordUtilityService>();
@@ -72,29 +79,29 @@ var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
 {
     // configure request pipline
-    
-using (var scope = app.Services.CreateScope())
-{
-    var context = scope.ServiceProvider.GetRequiredService<UsersContext>();
-    var passwordUtilityService = scope.ServiceProvider.GetRequiredService<IPasswordUtilityService>();
-    var seeder = new CustomerDataSeeder(context, passwordUtilityService);
-    seeder.SeedData();
-}
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-app.UseCors(MyAllowSpecificOrigins);
+    using (var scope = app.Services.CreateScope())
+    {
+        var context = scope.ServiceProvider.GetRequiredService<UsersContext>();
+        var passwordUtilityService = scope.ServiceProvider.GetRequiredService<IPasswordUtilityService>();
+        var seeder = new CustomerDataSeeder(context, passwordUtilityService);
+        seeder.SeedData();
+    }
 
-app.UseMiddleware<JwtMiddleware>();
+    if (app.Environment.IsDevelopment())
+    {
+        app.UseSwagger();
+        app.UseSwaggerUI();
+    }
+    app.UseCors(MyAllowSpecificOrigins);
 
-app.UseHttpsRedirection();
+    app.UseMiddleware<JwtMiddleware>();
+    app.UseOutputCache();
+    app.UseHttpsRedirection();
 
-app.UseAuthorization();
+    app.UseAuthorization();
 
-app.MapControllers();
+    app.MapControllers();
 }
 
 app.Run();

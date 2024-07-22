@@ -2,6 +2,7 @@
 using CustomersApi.Models;
 using CustomrsApi.Filters;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace CustomersApi.Controllers
 {
@@ -10,10 +11,13 @@ namespace CustomersApi.Controllers
     public class UsersController : ControllerBase
     {
         private IUserService _userService;
+        private readonly IOutputCacheStore _cache;
 
-        public UsersController(IUserService userService)
+
+        public UsersController(IUserService userService, IOutputCacheStore cache)
         {
             _userService = userService;
+            _cache = cache;
         }
 
         [HttpPost("Login")]
@@ -29,7 +33,8 @@ namespace CustomersApi.Controllers
 
         // [HttpGet("Customers")]
         [HttpGet]
-        [Authorize]
+        // [Authorize]
+        [OutputCache(PolicyName = "UsersPolicy")]
         public async Task<IActionResult> Customers()
         {
             var users = await _userService.GetAll();
@@ -38,15 +43,16 @@ namespace CustomersApi.Controllers
 
         // [HttpPut("EditCustomer")]
         [HttpPut]
-        [Authorize]
+        // [Authorize]
         [ValidateIsEditorAuthorized]
-        public async Task<IActionResult> EditCustomer([FromBody] UpdateUserDTO userObj)
+        public async Task<IActionResult> EditCustomer([FromBody] UpdateUserDTO userObj, CancellationToken token)
         {
             var result = await _userService.UpdateUser(userObj);
             if (result == null)
             {
                 return NotFound();
             }
+            await _cache.EvictByTagAsync("UsersPolicy_Tag", token);
             return Ok(result);
         }
 
@@ -64,8 +70,8 @@ namespace CustomersApi.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize]
-        public async Task<IActionResult> DeleteCustomer(int id)
+        // [Authorize]
+        public async Task<IActionResult> DeleteCustomer(int id, CancellationToken token)
         {
             var customer = await _userService.GetById(id);
             if (customer == null)
@@ -74,6 +80,7 @@ namespace CustomersApi.Controllers
             }
 
             await _userService.DeleteUser(id);
+            await _cache.EvictByTagAsync("UsersPolicy_Tag", token);
             return NoContent();
         }
     }
