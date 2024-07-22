@@ -26,7 +26,7 @@ namespace CustomersApi.Controllers
             var response = await _userService.Authenticate(authData);
 
             if (response == null)
-                return BadRequest(new { message = "Username or password is incorrect" });
+                return BadRequest(new { message = "One of the given fields is incorrect" });
 
             return Ok(response);
         }
