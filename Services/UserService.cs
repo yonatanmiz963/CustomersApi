@@ -17,12 +17,15 @@ namespace CustomersApi.Services
         private readonly AppSettings _appSettings;
         private readonly UsersContext _db;
         private readonly IPasswordUtilityService _passwordUtilityService;
+        private readonly IConfiguration _config;
 
-        public UserService(IOptions<AppSettings> appSettings, UsersContext db, IPasswordUtilityService passwordUtility)
+
+        public UserService(IOptions<AppSettings> appSettings, UsersContext db, IPasswordUtilityService passwordUtility, IConfiguration config)
         {
             _appSettings = appSettings.Value;
             _db = db;
             _passwordUtilityService = passwordUtility;
+            _config = config;
         }
 
         public async Task<AuthenticateResponse?> Authenticate(AuthenticateRequest model)
@@ -35,7 +38,7 @@ namespace CustomersApi.Services
             // authentication successful so generate jwt token
             var token = await generateJwtToken(User);
 
-            return new AuthenticateResponse(User, token);
+            return new AuthenticateResponse(User, token, DateTime.UtcNow.AddMinutes(_appSettings.TokenExpirationInMinutes));
         }
 
         public async Task<IEnumerable<UserDTO>> GetAll()
@@ -113,13 +116,13 @@ namespace CustomersApi.Services
             var token = await Task.Run(() =>
             {
 
-                var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
+                var key = Encoding.ASCII.GetBytes(_config["Jwt:Key"] ?? string.Empty);
                 var tokenDescriptor = new SecurityTokenDescriptor
                 {
-                    Audience = _appSettings.Audience,
-                    Issuer = _appSettings.Issuer,
+                    // Audience = _appSettings.Audience,
+                    // Issuer = _appSettings.Issuer,
                     Subject = new ClaimsIdentity(new[] { new Claim("id", User.Id.ToString()) }),
-                    Expires = DateTime.UtcNow.AddMinutes(10),
+                    Expires = DateTime.UtcNow.AddMinutes(_appSettings.TokenExpirationInMinutes),
                     SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
                 };
                 return tokenHandler.CreateToken(tokenDescriptor);

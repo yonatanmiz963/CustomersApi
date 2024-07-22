@@ -33,7 +33,7 @@ namespace CustomersApi.Controllers
 
         // [HttpGet("Customers")]
         [HttpGet]
-        // [Authorize]
+        [Authorize]
         [OutputCache(PolicyName = "UsersPolicy")]
         public async Task<IActionResult> Customers()
         {
@@ -43,7 +43,7 @@ namespace CustomersApi.Controllers
 
         // [HttpPut("EditCustomer")]
         [HttpPut]
-        // [Authorize]
+        [Authorize]
         [ValidateIsEditorAuthorized]
         public async Task<IActionResult> EditCustomer([FromBody] UpdateUserDTO userObj, CancellationToken token)
         {
@@ -70,7 +70,7 @@ namespace CustomersApi.Controllers
         }
 
         [HttpDelete("{id}")]
-        // [Authorize]
+        [Authorize]
         public async Task<IActionResult> DeleteCustomer(int id, CancellationToken token)
         {
             var customer = await _userService.GetById(id);

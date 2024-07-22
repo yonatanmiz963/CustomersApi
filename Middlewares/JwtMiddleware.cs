@@ -10,11 +10,14 @@ namespace CustomersApi.Middlewares
     {
         private readonly RequestDelegate _next;
         private readonly AppSettings _appSettings;
+            private readonly IConfiguration _config;
 
-        public JwtMiddleware(RequestDelegate next, IOptions<AppSettings> appSettings)
+
+        public JwtMiddleware(RequestDelegate next, IOptions<AppSettings> appSettings, IConfiguration config)
         {
             _next = next;
             _appSettings = appSettings.Value;
+            _config = config;
         }
 
         public async Task Invoke(HttpContext context, IUserService userService)
@@ -32,13 +35,13 @@ namespace CustomersApi.Middlewares
             try
             {
                 var tokenHandler = new JwtSecurityTokenHandler();
-                var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
+                var key = Encoding.ASCII.GetBytes(_config["Jwt:Key"] ?? string.Empty);
                 tokenHandler.ValidateToken(token, new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(key),
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
                     ValidIssuer = _appSettings.Issuer,
                     ValidAudience = _appSettings.Audience,
                     // set clock skew to zero so tokens expire exactly at token expiration time (instead of 5 minutes later)
