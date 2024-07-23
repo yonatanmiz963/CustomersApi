@@ -28,8 +28,9 @@ var builder = WebApplication.CreateBuilder(args);
 
     // Add services to the container.
     builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("AppSettings:JwtSettings"));
-    builder.Services.AddSingleton<IUserRepository, UserRepository>();
-    builder.Services.AddTransient<IUserService, UserService>();
+
+    builder.Services.AddScoped<IUserRepository, UserRepository>();
+    builder.Services.AddScoped<IUserService, UserService>();
     builder.Services.AddTransient<IPasswordUtilityService, PasswordUtilityService>();
     builder.Services.AddSingleton<UserDataInitializer>();
 
@@ -87,15 +88,12 @@ var app = builder.Build();
     {
         app.UseSwagger();
         app.UseSwaggerUI();
+        app.UseCors(MyAllowSpecificOrigins);
     }
-    app.UseCors(MyAllowSpecificOrigins);
 
     app.UseMiddleware<JwtMiddleware>();
     app.UseOutputCache();
     app.UseHttpsRedirection();
-
-    app.UseAuthorization();
-
     app.MapControllers();
 }
 
