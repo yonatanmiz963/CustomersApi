@@ -9,14 +9,14 @@ namespace CustomersApi.Middlewares
     public class JwtMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly AppSettings _appSettings;
-            private readonly IConfiguration _config;
+        private readonly JwtSettings _jwtSettings;
+        private readonly IConfiguration _config;
 
 
-        public JwtMiddleware(RequestDelegate next, IOptions<AppSettings> appSettings, IConfiguration config)
+        public JwtMiddleware(RequestDelegate next, IOptions<JwtSettings> jwtSettings, IConfiguration config)
         {
             _next = next;
-            _appSettings = appSettings.Value;
+            _jwtSettings = jwtSettings.Value;
             _config = config;
         }
 
@@ -42,8 +42,8 @@ namespace CustomersApi.Middlewares
                     IssuerSigningKey = new SymmetricSecurityKey(key),
                     ValidateIssuer = false,
                     ValidateAudience = false,
-                    ValidIssuer = _appSettings.Issuer,
-                    ValidAudience = _appSettings.Audience,
+                    ValidIssuer = _jwtSettings.Issuer,
+                    ValidAudience = _jwtSettings.Audience,
                     // set clock skew to zero so tokens expire exactly at token expiration time (instead of 5 minutes later)
                     ClockSkew = TimeSpan.Zero
                 }, out SecurityToken validatedToken);

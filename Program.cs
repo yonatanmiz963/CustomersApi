@@ -9,6 +9,10 @@ var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
 var builder = WebApplication.CreateBuilder(args);
 {
+
+    // Add services to the container.
+    builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("AppSettings:JwtSettings"));
+
     // Configure services (DI)
     builder.Services.AddCors(options =>
     {
@@ -29,7 +33,6 @@ var builder = WebApplication.CreateBuilder(args);
 
     });
 
-    builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
     builder.Services.AddScoped<IUserService, UserService>();
     builder.Services.AddSingleton<IPasswordUtilityService, PasswordUtilityService>();
 

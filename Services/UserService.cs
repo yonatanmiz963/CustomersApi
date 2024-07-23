@@ -14,18 +14,18 @@ namespace CustomersApi.Services
 {
     public class UserService : IUserService
     {
-        private readonly AppSettings _appSettings;
+        private readonly JwtSettings _jwtSettings;
         private readonly UsersContext _db;
         private readonly IPasswordUtilityService _passwordUtilityService;
         private readonly IConfiguration _config;
 
 
-        public UserService(IOptions<AppSettings> appSettings, UsersContext db, IPasswordUtilityService passwordUtility, IConfiguration config)
+        public UserService(IOptions<JwtSettings> jwtSettings, UsersContext db, IPasswordUtilityService passwordUtility, IConfiguration config)
         {
-            _appSettings = appSettings.Value;
             _db = db;
             _passwordUtilityService = passwordUtility;
             _config = config;
+            _jwtSettings = jwtSettings.Value;
         }
 
         public async Task<AuthenticateResponse?> Authenticate(AuthenticateRequest model)
@@ -38,7 +38,7 @@ namespace CustomersApi.Services
             // authentication successful so generate jwt token
             var token = await generateJwtToken(User);
 
-            return new AuthenticateResponse(User, token, DateTime.UtcNow.AddMinutes(_appSettings.TokenExpirationInMinutes));
+            return new AuthenticateResponse(User, token, DateTime.UtcNow.AddMinutes(_jwtSettings.TokenExpirationInMinutes));
         }
 
         public async Task<IEnumerable<UserDTO>> GetAll()
@@ -119,10 +119,10 @@ namespace CustomersApi.Services
                 var key = Encoding.ASCII.GetBytes(_config["Jwt:Key"] ?? string.Empty);
                 var tokenDescriptor = new SecurityTokenDescriptor
                 {
-                    // Audience = _appSettings.Audience,
-                    // Issuer = _appSettings.Issuer,
+                    Audience = _jwtSettings.Audience,
+                    Issuer = _jwtSettings.Issuer,
                     Subject = new ClaimsIdentity(new[] { new Claim("id", User.Id.ToString()) }),
-                    Expires = DateTime.UtcNow.AddMinutes(_appSettings.TokenExpirationInMinutes),
+                    Expires = DateTime.UtcNow.AddMinutes(_jwtSettings.TokenExpirationInMinutes),
                     SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
                 };
                 return tokenHandler.CreateToken(tokenDescriptor);
