@@ -8,7 +8,14 @@ using System.Text;
 using CustomersApi.Models;
 using CustomersApi.Model;
 
-
+public interface IUserService
+{
+    Task<AuthenticateResponse?> Authenticate(AuthenticateRequest model);
+    Task<IEnumerable<UserDTO>> GetAll();
+    Task<UserDTO?> GetById(int id);
+    Task<UserDTO?> UpdateUser(UpdateUserDTO userObj);
+    Task DeleteUser(int id);
+}
 
 namespace CustomersApi.Services
 {

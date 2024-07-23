@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using CustomersApi.Models;
-using CustomersApi.Model;
 using Microsoft.OpenApi.Models;
 using CustomersApi.Services;
 using CustomersApi.Middlewares;
