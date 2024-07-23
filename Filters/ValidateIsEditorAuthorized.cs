@@ -12,9 +12,9 @@ namespace CustomrsApi.Filters
 
             if (context.HttpContext.Items["User"] is UserDTO user)
             {
-                if (context.ActionArguments.ContainsKey("userobj") && context.ActionArguments["userobj"] is UpdateUserDTO userObj)
+                if (context.ActionArguments.ContainsKey("updatedUserObj") && context.ActionArguments["updatedUserObj"] is UpdateUserDTO updatedUserObj)
                 {
-                    if (userObj.Id != user.Id)
+                    if (updatedUserObj.Id != user.Id)
                     {
                         context.Result = new UnauthorizedObjectResult(
                             "You are not authorized to edit this user's information, only the user himself can edit his information."

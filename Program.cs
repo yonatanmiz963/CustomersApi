@@ -1,16 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using CustomersApi.Models;
 using Microsoft.OpenApi.Models;
-using CustomersApi.Services;
 using CustomersApi.Middlewares;
 
 var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 
 var builder = WebApplication.CreateBuilder(args);
 {
-
-    // Add services to the container.
-    builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("AppSettings:JwtSettings"));
 
     // Configure services (DI)
     builder.Services.AddCors(options =>
@@ -32,8 +28,12 @@ var builder = WebApplication.CreateBuilder(args);
 
     });
 
-    builder.Services.AddScoped<IUserService, UserService>();
-    builder.Services.AddSingleton<IPasswordUtilityService, PasswordUtilityService>();
+    // Add services to the container.
+    builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("AppSettings:JwtSettings"));
+    builder.Services.AddSingleton<IUserRepository, UserRepository>();
+    builder.Services.AddTransient<IUserService, UserService>();
+    builder.Services.AddTransient<IPasswordUtilityService, PasswordUtilityService>();
+    builder.Services.AddSingleton<UserDataInitializer>();
 
     builder.Services.AddControllers();
 
@@ -84,10 +84,8 @@ var app = builder.Build();
 
     using (var scope = app.Services.CreateScope())
     {
-        var context = scope.ServiceProvider.GetRequiredService<UsersContext>();
-        var passwordUtilityService = scope.ServiceProvider.GetRequiredService<IPasswordUtilityService>();
-        var seeder = new CustomerDataSeeder(context, passwordUtilityService);
-        seeder.SeedData();
+        var userDataInitializer = scope.ServiceProvider.GetRequiredService<UserDataInitializer>();
+        userDataInitializer.Initialize(); // Initialize the users data
     }
 
     if (app.Environment.IsDevelopment())

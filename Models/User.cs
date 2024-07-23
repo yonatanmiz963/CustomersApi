@@ -22,5 +22,5 @@ public class User
     [RegularExpression("^[0-9]{7}$", ErrorMessage = "The PhoneNumber must be exactly 7 digits.")]
     public string? PhoneNumber { get; set; }
 
-    public required string HashPassword { get; set; }
+    public string HashPassword { get; set; }
 }

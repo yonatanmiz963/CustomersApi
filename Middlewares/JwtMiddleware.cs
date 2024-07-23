@@ -52,7 +52,7 @@ namespace CustomersApi.Middlewares
                 var userId = int.Parse(jwtToken.Claims.First(x => x.Type == "id").Value);
 
                 //Attach user to context on successful JWT validation
-                context.Items["User"] = await userService.GetById(userId);
+                context.Items["User"] = await userService.GetByIdAsync(userId);
             }
             catch
             {

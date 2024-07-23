@@ -6,7 +6,7 @@ namespace CustomersApi.Models
     public class UpdateUserDTO
     {
         [Required]
-        public int? Id { get; set; }
+        public int Id { get; set; }
         [Required]
         public string? FirstName { get; set; }
         [Required]

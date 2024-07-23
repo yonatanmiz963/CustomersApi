@@ -1,0 +1,42 @@
+[
+  {
+    "Id": 1,
+    "Email": "yonatanmiz963@gmail.com",
+    "FirstName": "Yonatan",
+    "BankAccount": "753724743",
+    "LastName": "Mizrahi",
+    "Date": "2024-07-23",
+    "PhoneNumber": "11111111",
+    "HashPassword": "$2a$11$ytAzR7aBcyyxt6wqf4N6nOZpGd2gazwCBSvmiplZDh1LYy.KBjQbG"
+  },
+  {
+    "Id": 2,
+    "Email": "hadas@gmail.com",
+    "FirstName": "Hadas",
+    "BankAccount": "534534543",
+    "LastName": "Bizrahi",
+    "Date": "2024-07-23",
+    "PhoneNumber": "222222222",
+    "HashPassword": "$2a$11$5NbMTMfK90.gVPjRAT4mCuHG9sdBrf298MReUAPfyZSYK3R9X4aWa"
+  },
+  {
+    "Id": 3,
+    "Email": "daniel@gmail.com",
+    "FirstName": "Daniel",
+    "BankAccount": "345345344",
+    "LastName": "Aizrahi",
+    "Date": "2024-07-23",
+    "PhoneNumber": "3333333333",
+    "HashPassword": "$2a$11$hyGKbrX3voppptM87DQWNu9Zai8gVsBep0J6bfGDCiYFO3mUaGsE2"
+  },
+  {
+    "Id": 4,
+    "Email": "david@gmail.com",
+    "FirstName": "David",
+    "BankAccount": "345435344",
+    "LastName": "Cizrahi",
+    "Date": "2024-07-23",
+    "PhoneNumber": "4444444444",
+    "HashPassword": "$2a$11$Pf6iRIn5BOH9tZLA8yVNfeupBNstE6.0n3rnesJQrBVHJTHQzP2FG"
+  }
+]
