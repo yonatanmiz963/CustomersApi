@@ -34,7 +34,7 @@ namespace CustomersApi.Controllers
         }
 
         [HttpGet]
-        // [Authorize]
+        [Authorize]
         [OutputCache(PolicyName = "UsersPolicy")]
         public async Task<IActionResult> GetAll()
         {

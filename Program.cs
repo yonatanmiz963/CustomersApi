@@ -37,9 +37,6 @@ var builder = WebApplication.CreateBuilder(args);
 
     builder.Services.AddControllers();
 
-    builder.Services.AddDbContext<UsersContext>(opt =>
-        opt.UseInMemoryDatabase("UsersList"));
-
     builder.Services.AddEndpointsApiExplorer();
     builder.Services.AddSwaggerGen(swagger =>
     {

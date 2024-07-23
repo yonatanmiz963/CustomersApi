@@ -1,9 +1,5 @@
 using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using CustomersApi.Models;
-using Microsoft.Extensions.DependencyInjection;
 
 public class UserDataInitializer
 {
@@ -25,14 +21,36 @@ public class UserDataInitializer
 
         var users = new List<User>
         {
-            new() { Id = 1, BankAccount = "753724743", FirstName = "Yonatan", Email = "yonatanmiz963@gmail.com", LastName = "Mizrahi", PhoneNumber = "11111111", HashPassword = _passwordUtilityService.HashPassword("admin")},
-            new() { Id = 2, BankAccount = "534534543", FirstName = "Hadas", Email = "hadas@gmail.com", LastName = "Bizrahi", PhoneNumber = "222222222", HashPassword = _passwordUtilityService.HashPassword("admin")},
-            new() { Id = 3, BankAccount = "345345344", FirstName = "Daniel", Email = "daniel@gmail.com", LastName = "Aizrahi", PhoneNumber = "3333333333", HashPassword = _passwordUtilityService.HashPassword("admin")},
-            new() { Id = 4, BankAccount = "345435344", FirstName = "David", Email = "david@gmail.com", LastName = "Cizrahi", PhoneNumber = "4444444444", HashPassword = _passwordUtilityService.HashPassword("admin")},
-
+            new User { Id = 1, BankAccount = "5555555", FirstName = "Yonatan", Email = "yonatanmiz963@gmail.com", LastName = "Mizrahi", PhoneNumber = "0543971495", HashPassword = _passwordUtilityService.HashPassword("admin") }
         };
+        for (int i = 2; i <= 100; i++)
+        {
+            users.Add(new User
+            {
+                Id = i,
+                BankAccount = GenerateBankAccount(i), // Assuming a method to generate unique bank accounts
+                FirstName = $"User{i}",
+                Email = $"user{i}@example.com",
+                LastName = $"LastName{i}",
+                PhoneNumber = GeneratePhoneNumber(i), // Assuming a method to generate unique phone numbers
+                HashPassword = _passwordUtilityService.HashPassword("admin")
+            });
+        }
 
         var jsonData = JsonConvert.SerializeObject(users, Formatting.Indented);
         File.WriteAllText(_filePath, jsonData);
     }
+
+    // Example methods for generating bank accounts and phone numbers
+    private string GenerateBankAccount(int seed)
+    {
+        return (123456789 + seed * 123).ToString();
+    }
+
+    private string GeneratePhoneNumber(int seed)
+    {
+        return (11111111 + seed * 111111).ToString();
+    }
+
+
 }
